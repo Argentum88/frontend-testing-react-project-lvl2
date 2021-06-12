@@ -6,9 +6,9 @@
     "test": "npx jest --bail"
   },
   "jest": {
-    "testEnvironment": "jsdom",
-    "transformIgnorePatterns": ["node_modules/(?!@hexlet/.*)"]
+    "transform": {}
   },
+  "type": "module",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/Argentum88/frontend-testing-react-project-lvl2.git"
