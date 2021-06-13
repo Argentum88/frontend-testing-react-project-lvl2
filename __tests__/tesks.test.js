@@ -4,21 +4,20 @@ import { render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { setupServer } from 'msw/node';
 import app from '@hexlet/react-todo-app-with-backend';
-import handlers from '../task-handlers';
+import handlers from '../handlers';
 
 const defaultState = {
   lists: [
-    { id: 1, name: 'primary', removable: false },
-    { id: 2, name: 'secondary', removable: true },
+    { id: 77, name: 'primary', removable: false },
   ],
   tasks: [],
-  currentListId: 1,
+  currentListId: 77,
 };
 
-const server = setupServer(...handlers);
+const server = setupServer(...handlers(defaultState));
 
 beforeAll(() => server.listen());
-afterEach(() => server.resetHandlers());
+afterEach(() => server.resetHandlers(...handlers(defaultState)));
 afterAll(() => server.close());
 
 test('see main page', async () => {
