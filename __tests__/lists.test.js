@@ -1,6 +1,12 @@
 import '@testing-library/jest-dom';
 
-import { render, screen, waitFor } from '@testing-library/react';
+import {
+  render,
+  screen,
+  waitFor,
+  act,
+} from '@testing-library/react';
+
 import userEvent from '@testing-library/user-event';
 import { setupServer } from 'msw/node';
 import app from '@hexlet/react-todo-app-with-backend';
@@ -74,6 +80,8 @@ test('recreate list', async () => {
     expect(screen.queryByText('secondary')).toBeNull();
   });
 
-  await userEvent.type(await screen.findByPlaceholderText('List name...'), 'secondary{enter}');
+  await act(async () => {
+    await userEvent.type(await screen.findByPlaceholderText('List name...'), 'secondary{enter}');
+  });
   expect(await screen.findByText('Tasks list is empty')).toBeInTheDocument();
 });
