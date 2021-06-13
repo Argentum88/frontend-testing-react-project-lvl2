@@ -7,7 +7,9 @@
   },
   "jest": {
     "testEnvironment": "jsdom",
-    "transformIgnorePatterns": ["node_modules/(?!@hexlet/.*)"]
+    "transformIgnorePatterns": [
+      "node_modules/(?!@hexlet/.*)"
+    ]
   },
   "repository": {
     "type": "git",
@@ -30,6 +32,8 @@
     "eslint-config-airbnb-base": "^14.2.1",
     "eslint-plugin-import": "^2.23.3",
     "eslint-plugin-jest": "^24.3.6",
-    "jest": "^27.0.1"
+    "jest": "^27.0.1",
+    "lodash": "^4.17.21",
+    "msw": "^0.29.0"
   }
 }
