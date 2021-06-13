@@ -1,6 +1,6 @@
 import '@testing-library/jest-dom';
 
-import { render, screen } from '@testing-library/react';
+import { render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { rest } from 'msw';
 import { setupServer } from 'msw/node';
@@ -18,7 +18,7 @@ const defaultState = {
   currentListId: 1,
 };
 
-const tasks = [];
+let tasks = [];
 const server = setupServer(
   rest.post('/api/v1/lists/:id/tasks', (req, res, ctx) => {
     const { text } = req.body;
@@ -35,6 +35,24 @@ const server = setupServer(
       ctx.json(task),
     );
   }),
+  rest.patch('/api/v1/tasks/:id', (req, res, ctx) => {
+    const taskId = Number(req.params.id);
+    const { completed } = req.body;
+    const task = tasks.find((t) => t.id === taskId);
+    task.completed = completed;
+    task.touched = Date.now();
+    return res(
+      ctx.status(201),
+      ctx.json(task),
+    );
+  }),
+  rest.delete('/api/v1/tasks/:id', (req, res, ctx) => {
+    const taskId = Number(req.params.id);
+    tasks = tasks.filter((t) => t.id !== taskId);
+    return res(
+      ctx.status(204),
+    );
+  }),
 );
 
 beforeAll(() => server.listen());
@@ -47,14 +65,18 @@ test('see main page', async () => {
 });
 
 test('work with tasks', async () => {
-  render(app(defaultState));
+  const { container } = render(app(defaultState));
 
-  await userEvent.type(await screen.findByPlaceholderText('Please type text...'), 'new task1');
+  await userEvent.type(await screen.findByPlaceholderText('Please type text...'), 'new task');
   await userEvent.click(await screen.findByRole('button', { name: 'Add' }));
-  expect(await screen.findByText('new task1')).toBeVisible();
+  expect(await screen.findByText('new task')).toBeInTheDocument();
 
-  await userEvent.type(await screen.findByPlaceholderText('Please type text...'), 'new task2');
-  await userEvent.click(await screen.findByRole('button', { name: 'Add' }));
-  expect(await screen.findByText('new task1')).toBeVisible();
-  expect(await screen.findByText('new task2')).toBeVisible();
+  await userEvent.click(await screen.findByRole('checkbox'));
+  await waitFor(() => {
+    const completedTask = container.querySelector('s');
+    expect(completedTask.textContent).toBe('new task');
+  });
+
+  await userEvent.click(await screen.findByRole('button', { name: 'Remove' }));
+  expect(await screen.findByText('Tasks list is empty')).toBeInTheDocument();
 });
