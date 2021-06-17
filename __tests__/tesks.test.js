@@ -28,16 +28,16 @@ test('see main page', async () => {
 test('work with tasks', async () => {
   const { container } = render(app(defaultState));
 
-  await userEvent.type(await screen.findByPlaceholderText('Please type text...'), 'new task');
-  await userEvent.click(await screen.findByRole('button', { name: 'Add' }));
+  userEvent.type(await screen.findByPlaceholderText('Please type text...'), 'new task');
+  userEvent.click(await screen.findByRole('button', { name: 'Add' }));
   expect(await screen.findByText('new task')).toBeInTheDocument();
 
-  await userEvent.click(await screen.findByRole('checkbox'));
+  userEvent.click(await screen.findByRole('checkbox'));
   await waitFor(() => {
     const completedTask = container.querySelector('s');
     expect(completedTask.textContent).toBe('new task');
   });
 
-  await userEvent.click(await screen.findByRole('button', { name: 'Remove' }));
+  userEvent.click(await screen.findByRole('button', { name: 'Remove' }));
   expect(await screen.findByText('Tasks list is empty')).toBeInTheDocument();
 });

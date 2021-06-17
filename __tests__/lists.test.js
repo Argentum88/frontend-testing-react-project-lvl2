@@ -45,23 +45,23 @@ afterAll(() => server.close());
 test('deleting task does not affect other list', async () => {
   render(app(defaultState));
   expect(await screen.findByText('primary task')).toBeInTheDocument();
-  await userEvent.click(await screen.findByRole('button', { name: 'Remove' }));
+  userEvent.click(await screen.findByRole('button', { name: 'Remove' }));
   expect(await screen.findByText('Tasks list is empty')).toBeInTheDocument();
 
-  await userEvent.click(await screen.findByRole('button', { name: 'secondary' }));
+  userEvent.click(await screen.findByRole('button', { name: 'secondary' }));
   expect(await screen.findByText('secondary task')).toBeInTheDocument();
 });
 
 test('closing task does not affect other list', async () => {
   const { container } = render(app(defaultState));
   expect(await screen.findByText('primary task')).toBeInTheDocument();
-  await userEvent.click(await screen.findByRole('checkbox'));
+  userEvent.click(await screen.findByRole('checkbox'));
   await waitFor(() => {
     const completedTask = container.querySelector('s');
     expect(completedTask.textContent).toBe('primary task');
   });
 
-  await userEvent.click(await screen.findByRole('button', { name: 'secondary' }));
+  userEvent.click(await screen.findByRole('button', { name: 'secondary' }));
   await waitFor(() => {
     expect(container.querySelector('s')).toBeNull();
   });
@@ -69,19 +69,19 @@ test('closing task does not affect other list', async () => {
 
 test('list name is unique', async () => {
   render(app(defaultState));
-  await userEvent.type(await screen.findByPlaceholderText('List name...'), 'secondary{enter}');
+  userEvent.type(await screen.findByPlaceholderText('List name...'), 'secondary{enter}');
   expect(await screen.findByText('secondary already exists')).toBeInTheDocument();
 });
 
 test('recreate list', async () => {
   const { container } = render(app(defaultState));
-  await userEvent.click(container.querySelector('.link-danger'));
+  userEvent.click(container.querySelector('.link-danger'));
   await waitFor(() => {
     expect(screen.queryByText('secondary')).toBeNull();
   });
 
   await act(async () => {
-    await userEvent.type(await screen.findByPlaceholderText('List name...'), 'secondary{enter}');
+    userEvent.type(await screen.findByPlaceholderText('List name...'), 'secondary{enter}');
   });
   expect(await screen.findByText('Tasks list is empty')).toBeInTheDocument();
 });
