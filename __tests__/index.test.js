@@ -71,9 +71,7 @@ describe('tasks', () => {
   test('api error', async () => {
     render(app(defaultState));
     server.use(
-      rest.post('/api/v1/lists/:id/tasks', (req, res, ctx) => {
-        return res(ctx.status(500));
-      }),
+      rest.post('/api/v1/lists/:id/tasks', (req, res, ctx) => res(ctx.status(500))),
     );
 
     userEvent.type(await screen.findByPlaceholderText('Please type text...'), 'new task');
