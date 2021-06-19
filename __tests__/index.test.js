@@ -8,6 +8,7 @@ import {
 } from '@testing-library/react';
 
 import userEvent from '@testing-library/user-event';
+import { rest } from 'msw';
 import { setupServer } from 'msw/node';
 import app from '@hexlet/react-todo-app-with-backend';
 import handlers from '../handlers';
@@ -65,6 +66,19 @@ describe('tasks', () => {
     await waitFor(() => {
       expect(submit).toBeEnabled();
     });
+  });
+
+  test('api error', async () => {
+    render(app(defaultState));
+    server.use(
+      rest.post('/api/v1/lists/:id/tasks', (req, res, ctx) => {
+        return res(ctx.status(500));
+      }),
+    );
+
+    userEvent.type(await screen.findByPlaceholderText('Please type text...'), 'new task');
+    userEvent.click(await screen.findByRole('button', { name: 'Add' }));
+    expect(await screen.findByText('Network error')).toBeInTheDocument();
   });
 });
 
