@@ -1,12 +1,6 @@
 import '@testing-library/jest-dom';
 
-import {
-  act,
-  render,
-  screen,
-  waitFor,
-} from '@testing-library/react';
-
+import { render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { rest } from 'msw';
 import { setupServer } from 'msw/node';
@@ -115,7 +109,8 @@ describe('lists', () => {
   });
 
   test('list name is unique', async () => {
-    userEvent.type(await screen.findByPlaceholderText('List name...'), 'secondary{enter}');
+    userEvent.type(await screen.findByPlaceholderText('List name...'), 'secondary');
+    userEvent.click(await screen.findByText('add list'));
     expect(await screen.findByText('secondary already exists')).toBeInTheDocument();
   });
 
@@ -125,9 +120,9 @@ describe('lists', () => {
       expect(screen.queryByText('secondary')).toBeNull();
     });
 
-    await act(async () => {
-      userEvent.type(await screen.findByPlaceholderText('List name...'), 'secondary{enter}');
-    });
+    userEvent.type(await screen.findByPlaceholderText('List name...'), 'secondary');
+    userEvent.click(await screen.findByText('add list'));
+    expect(await screen.findByText('secondary')).toBeInTheDocument();
     expect(await screen.findByText('Tasks list is empty')).toBeInTheDocument();
   });
 });
