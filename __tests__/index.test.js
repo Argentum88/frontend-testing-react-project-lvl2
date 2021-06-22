@@ -13,11 +13,9 @@ import { setupServer } from 'msw/node';
 import app from '@hexlet/react-todo-app-with-backend';
 import handlers from '../handlers';
 
-let defaultState;
 let server;
-let container;
 beforeEach(() => {
-  defaultState = {
+  const defaultState = {
     lists: [
       { id: 77, name: 'primary', removable: false },
       { id: 78, name: 'secondary', removable: true },
@@ -36,7 +34,7 @@ beforeEach(() => {
   server = setupServer(...handlers(defaultState));
   server.listen();
 
-  ({ container } = render(app(defaultState)));
+  render(app(defaultState));
 });
 
 afterEach(() => {
@@ -53,10 +51,10 @@ describe('tasks', () => {
     userEvent.click(await screen.findByRole('button', { name: 'Add' }));
     expect(await screen.findByText('primary task')).toBeInTheDocument();
 
-    userEvent.click(await screen.findByRole('checkbox'));
+    const checkbox = await screen.findByRole('checkbox');
+    userEvent.click(checkbox);
     await waitFor(() => {
-      const completedTask = container.querySelector('s');
-      expect(completedTask.textContent).toBe('primary task');
+      expect(checkbox).toBeChecked();
     });
 
     userEvent.click(await screen.findByRole('button', { name: 'Remove' }));
@@ -104,15 +102,15 @@ describe('lists', () => {
     userEvent.click(await screen.findByRole('button', { name: 'Add' }));
     expect(await screen.findByText('primary task')).toBeInTheDocument();
 
-    userEvent.click(await screen.findByRole('checkbox'));
+    const checkbox = await screen.findByRole('checkbox');
+    userEvent.click(checkbox);
     await waitFor(() => {
-      const completedTask = container.querySelector('s');
-      expect(completedTask.textContent).toBe('primary task');
+      expect(checkbox).toBeChecked();
     });
 
     userEvent.click(await screen.findByRole('button', { name: 'secondary' }));
     await waitFor(() => {
-      expect(container.querySelector('s')).toBeNull();
+      expect(screen.getByRole('checkbox')).not.toBeChecked();
     });
   });
 
@@ -122,7 +120,7 @@ describe('lists', () => {
   });
 
   test('recreate list', async () => {
-    userEvent.click(container.querySelector('.link-danger'));
+    userEvent.click(await screen.findByText('remove list'));
     await waitFor(() => {
       expect(screen.queryByText('secondary')).toBeNull();
     });
